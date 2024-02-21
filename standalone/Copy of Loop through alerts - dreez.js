@@ -5,9 +5,13 @@
 extAlert = control
   .getExtensionLoader()
   .getExtension(org.zaproxy.zap.extension.alert.ExtensionAlert.NAME);
-
+var System = Java.type("java.lang.System");
+var ZAPAlertJsonFileName = System.getenv("ZAPAlertJsonFileName");
+var fs = Java.type("java.io.File");
+if (ZAPAlertJsonFileName == "") {
+  ZAPAlertJsonFileName = "reports/ZAPAlertJsonFileName.json";
+}
 var AlertCnt = 0;
-
 
 if (extAlert != null) {
   AlertCnt = 0;
@@ -40,5 +44,16 @@ if (extAlert != null) {
     print(x);
   }
 
+  // Data which will write in a file.
+  let data = JSON.stringify(loop);
+  print(
+    "\n\n\n -------------------------------alerts-----------------------\n\n\n" +
+      loop
+  );
+  // Write data in 'Hello.txt' .
+  fs.writeFile(ZAPAlertJsonFileName, data, (err) => {
+    // In case of a error throw err.
+    if (err) throw err;
+  });
   // For more alert properties see https://static.javadoc.io/org.zaproxy/zap/latest/org/parosproxy/paros/core/scanner/Alert.html
 }
